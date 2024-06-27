@@ -3,8 +3,8 @@ import math
 import re
 from datetime import datetime
 from typing import Any, Dict, List
-
 import pandas as pd
+from src.logger import setup_logger
 
 
 def read_transactions_xlsx_file(xlsx_file: str) -> list[dict]:
@@ -14,8 +14,12 @@ def read_transactions_xlsx_file(xlsx_file: str) -> list[dict]:
     return data
 
 
+logger = setup_logger("services", "services.log")
+
+
 def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
     """Функция для анализа выгодности категорий повышенного кешбэка."""
+    logger.info("start analysis_of_cashback_categories")
     cashback_data = {}
     new_data = read_transactions_xlsx_file(data)
     user_date = datetime.strptime(f"{month}.{year}", "%m.%Y")
@@ -30,19 +34,23 @@ def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
                     cashback_data[transaction.get("Категория")] += transaction.get("Бонусы (включая кэшбэк)")
 
     json_data = json.dumps(cashback_data, ensure_ascii=False)
+    logger.info(f"end {json_data}")
     return json_data
 
 
-# print(analysis_of_cashback_categories("../data/operations.xls", "2018", "12"))
+analysis_of_cashback_categories("../data/operations.xls", "2018", "12")
+
+
 def rounded_number(num: int, step: int) -> int:
     """Функция округления числа с определённым шагом"""
-    plus_num = (num**2) ** 0.5
+    plus_num = (num ** 2) ** 0.5
     round_number = int(math.ceil(plus_num / step)) * step
     return round_number
 
 
 def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) -> float:
     """Функция, которая возвращает сумму, которую удалось бы отложить в «Инвесткопилку»."""
+    logger.info("start investment_bank")
     money_box = 0
     user_date = datetime.strptime(f"{month}", "%Y-%m")
     for transaction in transactions:
@@ -51,44 +59,46 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
             transaction_date = datetime.strptime(date_string, "%d.%m.%Y")
             if user_date.strftime("%m.%Y") in transaction_date.strftime("%m.%Y"):
                 money_box += (
-                    rounded_number(transaction.get("Сумма операции", ""), limit)
-                    - (transaction.get("Сумма операции", "") ** 2) ** 0.5
+                        rounded_number(transaction.get("Сумма операции", ""), limit)
+                        - (transaction.get("Сумма операции", "") ** 2) ** 0.5
                 )
+    logger.info(f"end {money_box}")
     return money_box
 
 
-print(
-    investment_bank(
-        "2021-09",
-        [
-            {"Дата операции": "29.09.2021", "Сумма операции": -4429.0},
-            {"Дата операции": "29.09.2021", "Сумма операции": -354.0},
-            {"Дата операции": "29.09.2021", "Сумма операции": -2110.0},
-            {"Дата операции": "29.08.2021", "Сумма операции": -25.0},
-        ],
-        50,
-    )
+investment_bank(
+    "2021-09",
+    [
+        {"Дата операции": "29.09.2021", "Сумма операции": -4429.0},
+        {"Дата операции": "29.09.2021", "Сумма операции": -354.0},
+        {"Дата операции": "29.09.2021", "Сумма операции": -2110.0},
+        {"Дата операции": "29.08.2021", "Сумма операции": -25.0},
+    ],
+    50,
 )
 
 
 def simple_search(user_request: str) -> str:
     """Функция возвращает JSON-ответ со всеми транзакциями, содержащими запрос пользователя в описании/категории."""
+    logger.info("start simple_search")
     python_data = read_transactions_xlsx_file("../data/operations.xls")
     data = []
     for transaction in python_data:
         if (user_request.lower() in (transaction.get("Описание", "")).lower()) or user_request.lower() in (
-            str(transaction.get("Категория", ""))
+                str(transaction.get("Категория", ""))
         ).lower():
             data.append(transaction)
     json_data = json.dumps(data, ensure_ascii=False)
+    logger.info(f"end {json_data}")
     return json_data
 
 
-# print(simple_search("Такси"))
+simple_search("Такси")
 
 
 def transfer_to_individuals() -> str:
     """Функция возвращает JSON со всеми транзакциями, которые относятся к переводам физлицам."""
+    logger.info("start transfer_to_individuals")
     python_data = read_transactions_xlsx_file("../data/operations.xls")
     data = []
     for transaction in python_data:
@@ -97,22 +107,24 @@ def transfer_to_individuals() -> str:
                 if re.match(r"\D+\s\D?\.", f'{transaction.get("Описание", "")}'):
                     data.append(transaction)
     json_data = json.dumps(data, ensure_ascii=False)
+    logger.info(f"end {json_data}")
     return json_data
 
 
-# print(transfer_to_individuals())
+transfer_to_individuals()
 
 
 def sort_by_phone_numbers() -> str:
     """Функция возвращает JSON со всеми транзакциями, содержащими в описании мобильные номера."""
+    logger.info("start sort_by_phone_numbers")
     python_data = read_transactions_xlsx_file("../data/operations.xls")
     data = []
     for transaction in python_data:
         if re.match(r"\D+\s?\D*\s\W\d\s\d+\s\d+\W\d+\W\d+", f'{transaction.get("Описание", "")}'):
             data.append(transaction)
     json_data = json.dumps(data, ensure_ascii=False)
+    logger.info(f"end {json_data}")
 
     return json_data
 
-
-# print(sort_by_phone_numbers())
+sort_by_phone_numbers()
