@@ -3,7 +3,9 @@ import math
 import re
 from datetime import datetime
 from typing import Any, Dict, List
+
 import pandas as pd
+
 from src.logger import setup_logger
 
 
@@ -38,12 +40,9 @@ def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
     return json_data
 
 
-analysis_of_cashback_categories("../data/operations.xls", "2018", "12")
-
-
 def rounded_number(num: int, step: int) -> int:
     """Функция округления числа с определённым шагом"""
-    plus_num = (num ** 2) ** 0.5
+    plus_num = (num**2) ** 0.5
     round_number = int(math.ceil(plus_num / step)) * step
     return round_number
 
@@ -59,23 +58,11 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
             transaction_date = datetime.strptime(date_string, "%d.%m.%Y")
             if user_date.strftime("%m.%Y") in transaction_date.strftime("%m.%Y"):
                 money_box += (
-                        rounded_number(transaction.get("Сумма операции", ""), limit)
-                        - (transaction.get("Сумма операции", "") ** 2) ** 0.5
+                    rounded_number(transaction.get("Сумма операции", ""), limit)
+                    - (transaction.get("Сумма операции", "") ** 2) ** 0.5
                 )
     logger.info(f"end {money_box}")
     return money_box
-
-
-investment_bank(
-    "2021-09",
-    [
-        {"Дата операции": "29.09.2021", "Сумма операции": -4429.0},
-        {"Дата операции": "29.09.2021", "Сумма операции": -354.0},
-        {"Дата операции": "29.09.2021", "Сумма операции": -2110.0},
-        {"Дата операции": "29.08.2021", "Сумма операции": -25.0},
-    ],
-    50,
-)
 
 
 def simple_search(user_request: str) -> str:
@@ -85,15 +72,12 @@ def simple_search(user_request: str) -> str:
     data = []
     for transaction in python_data:
         if (user_request.lower() in (transaction.get("Описание", "")).lower()) or user_request.lower() in (
-                str(transaction.get("Категория", ""))
+            str(transaction.get("Категория", ""))
         ).lower():
             data.append(transaction)
     json_data = json.dumps(data, ensure_ascii=False)
     logger.info(f"end {json_data}")
     return json_data
-
-
-simple_search("Такси")
 
 
 def transfer_to_individuals() -> str:
@@ -111,9 +95,6 @@ def transfer_to_individuals() -> str:
     return json_data
 
 
-transfer_to_individuals()
-
-
 def sort_by_phone_numbers() -> str:
     """Функция возвращает JSON со всеми транзакциями, содержащими в описании мобильные номера."""
     logger.info("start sort_by_phone_numbers")
@@ -126,5 +107,3 @@ def sort_by_phone_numbers() -> str:
     logger.info(f"end {json_data}")
 
     return json_data
-
-sort_by_phone_numbers()
