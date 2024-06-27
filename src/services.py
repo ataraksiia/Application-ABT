@@ -27,15 +27,18 @@ def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
     user_date = datetime.strptime(f"{month}.{year}", "%m.%Y")
     for transaction in new_data:
         date_string = str(transaction.get("Дата операции", ""))
-        if date_string != "nan":
+        if date_string != "NaN":
             transaction_date = datetime.strptime(date_string, "%d.%m.%Y %H:%M:%S")
             if user_date.strftime("%m.%Y") in transaction_date.strftime("%m.%Y"):
                 if transaction.get("Категория") not in cashback_data:
                     cashback_data[transaction.get("Категория")] = transaction.get("Бонусы (включая кэшбэк)")
                 else:
                     cashback_data[transaction.get("Категория")] += transaction.get("Бонусы (включая кэшбэк)")
+        for k, v in transaction.items():
+            if pd.isnull(v):
+                transaction[k] = None
 
-    json_data = json.dumps(cashback_data, ensure_ascii=False)
+    json_data = json.dumps(cashback_data, ensure_ascii=False, indent=4)
     logger.info(f"end {json_data}")
     return json_data
 
@@ -75,7 +78,10 @@ def simple_search(user_request: str) -> str:
             str(transaction.get("Категория", ""))
         ).lower():
             data.append(transaction)
-    json_data = json.dumps(data, ensure_ascii=False)
+        for k, v in transaction.items():
+            if pd.isnull(v):
+                transaction[k] = None
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
     logger.info(f"end {json_data}")
     return json_data
 
@@ -87,10 +93,12 @@ def transfer_to_individuals() -> str:
     data = []
     for transaction in python_data:
         for k, v in transaction.items():
+            if pd.isnull(v):
+                transaction[k] = None
             if v == "Переводы" and k == "Категория":
                 if re.match(r"\D+\s\D?\.", f'{transaction.get("Описание", "")}'):
                     data.append(transaction)
-    json_data = json.dumps(data, ensure_ascii=False)
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
     logger.info(f"end {json_data}")
     return json_data
 
@@ -101,9 +109,14 @@ def sort_by_phone_numbers() -> str:
     python_data = read_transactions_xlsx_file("../data/operations.xls")
     data = []
     for transaction in python_data:
+        for k, v in transaction.items():
+            if pd.isnull(v):
+                transaction[k] = None
         if re.match(r"\D+\s?\D*\s\W\d\s\d+\s\d+\W\d+\W\d+", f'{transaction.get("Описание", "")}'):
             data.append(transaction)
-    json_data = json.dumps(data, ensure_ascii=False)
+
+    # data = data[~np.isnan(data)]
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
     logger.info(f"end {json_data}")
 
     return json_data
