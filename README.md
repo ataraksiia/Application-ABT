@@ -19,8 +19,6 @@
    
 Для работы программы требуются API ключи:
 Создайте файл .env в корневой папке:
-Напишите:
-API_KEY=...
-API_KEY_2=...
+Шаблон файла - .env.sample
 1) Для переменной API_KEY получите ключ на сайте https://www.exchangerate-api.com и впишите
 2) Для переменной API_KEY_2 получите ключ на сайте https://site.financialmodelingprep.com и впишите
