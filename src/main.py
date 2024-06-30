@@ -1,5 +1,10 @@
-from src.services import (analysis_of_cashback_categories, investment_bank, simple_search, sort_by_phone_numbers,
-                          transfer_to_individuals)
+from src.services import (
+    analysis_of_cashback_categories,
+    investment_bank,
+    simple_search,
+    sort_by_phone_numbers,
+    transfer_to_individuals,
+)
 
 if __name__ == "__main__":
     print(analysis_of_cashback_categories("../data/operations.xls", "2018", "12"))

@@ -8,15 +8,14 @@ import pandas as pd
 
 from src.logger import setup_logger
 
+logger = setup_logger("services", "../all_loggers/services.log")
+
 
 def read_transactions_xlsx_file(xlsx_file: str) -> list[dict]:
     """Считывание финансовые операций с XLSX файла и возвращает DataFrame"""
     reader = pd.read_excel(xlsx_file)
     data = reader.to_dict(orient="records")
     return data
-
-
-logger = setup_logger("services", "services.log")
 
 
 def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
@@ -39,7 +38,7 @@ def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
                 transaction[k] = None
 
     json_data = json.dumps(cashback_data, ensure_ascii=False, indent=4)
-    logger.info(f"end {json_data}")
+    logger.info(f"end {json_data}\n")
     return json_data
 
 
@@ -64,7 +63,7 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
                     rounded_number(transaction.get("Сумма операции", ""), limit)
                     - (transaction.get("Сумма операции", "") ** 2) ** 0.5
                 )
-    logger.info(f"end {money_box}")
+    logger.info(f"end {money_box}\n")
     return money_box
 
 
@@ -82,7 +81,7 @@ def simple_search(user_request: str) -> str:
             if pd.isnull(v):
                 transaction[k] = None
     json_data = json.dumps(data, ensure_ascii=False, indent=4)
-    logger.info(f"end {json_data}")
+    logger.info(f"end {json_data}\n")
     return json_data
 
 
@@ -99,7 +98,7 @@ def transfer_to_individuals() -> str:
                 if re.match(r"\D+\s\D?\.", f'{transaction.get("Описание", "")}'):
                     data.append(transaction)
     json_data = json.dumps(data, ensure_ascii=False, indent=4)
-    logger.info(f"end {json_data}")
+    logger.info(f"end {json_data}\n")
     return json_data
 
 
@@ -117,6 +116,6 @@ def sort_by_phone_numbers() -> str:
 
     # data = data[~np.isnan(data)]
     json_data = json.dumps(data, ensure_ascii=False, indent=4)
-    logger.info(f"end {json_data}")
+    logger.info(f"end {json_data}\n")
 
     return json_data
