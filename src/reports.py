@@ -19,7 +19,6 @@ def spending_by_category(transactions: str, category: str, date: Optional[str] =
         format_date = datetime.now()
     date_3_month_ago = format_date - timedelta(days=90)
     data = read_transactions_xlsx_file(transactions)
-    # print(data)
     for transaction in data:
         if pd.isnull(transaction.get("Дата платежа", "")) is False and transaction.get("Категория", "") == category:
             if (
@@ -38,6 +37,3 @@ def spending_by_category(transactions: str, category: str, date: Optional[str] =
     df = pd.DataFrame(list(expenditure), columns=["Дата платежа", "Категория", "Сумма платежа"])
     logger.info(f"end \n{df}\n")
     return df
-
-
-print(spending_by_category("../data/operations.xls", "Фастфуд", "07.10.2018"))
