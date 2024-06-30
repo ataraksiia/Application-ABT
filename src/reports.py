@@ -3,12 +3,14 @@ from typing import Optional
 
 import pandas as pd
 
+from src.decorators import log
 from src.logger import setup_logger
 from src.services import read_transactions_xlsx_file
 
 logger = setup_logger("reports", "../all_loggers/reports.log")
 
 
+@log()
 def spending_by_category(transactions: str, category: str, date: Optional[str] = None) -> pd.DataFrame:
     """Функция принимает на вход:
     датафрейм с транзакциями,
@@ -43,3 +45,6 @@ def spending_by_category(transactions: str, category: str, date: Optional[str] =
     df = pd.DataFrame(list(expenditure), columns=["Дата платежа", "Категория", "Сумма платежа"])
     logger.info(f"end \n{df}\n")
     return df
+
+
+spending_by_category("../data/operations.xls", "Фастфуд", "07.10.2018")
