@@ -3,13 +3,8 @@ from unittest.mock import Mock, patch
 
 from pandas import DataFrame
 
-from src.services import (
-    analysis_of_cashback_categories,
-    investment_bank,
-    simple_search,
-    sort_by_phone_numbers,
-    transfer_to_individuals,
-)
+from src.services import (analysis_of_cashback_categories, investment_bank, simple_search, sort_by_phone_numbers,
+                          transfer_to_individuals)
 
 
 @patch("pandas.read_excel")
@@ -52,43 +47,8 @@ def test_analysis_of_cashback_categories(mock_reader: Mock) -> None:
             },
         ]
     )
-    assert (
-        analysis_of_cashback_categories(
-            f'{[{
-                    "Дата операции": "31.01.2019 13:34:15",
-                    "Дата платежа": "31.01.2019",
-                    "Номер карты": "",
-                    "Статус": "OK",
-                    "Сумма операции": -35.0,
-                    "Валюта операции": "RUB",
-                    "Сумма платежа": -35.0,
-                    "Валюта платежа": "RUB",
-                    "Кэшбэк": "",
-                    "Категория": "Мобильная связь",
-                    "MCC": "",
-                    "Описание": "Teletie Бизнес +7 966 000-00-00",
-                    "Бонусы (включая кэшбэк)": 0,
-                    "Округление на инвесткопилку": 0,
-                    "Сумма операции с округлением": 35.0},
-                    {"Дата операции": "30.01.2019 20:34:24",
-                     "Дата платежа": "01.02.2019",
-                     "Номер карты": "*7197",
-                     "Статус": "OK",
-                     "Сумма операции": -97.8,
-                     "Валюта операции": "RUB",
-                     "Сумма платежа": -97.8,
-                     "Валюта платежа": "RUB",
-                     "Кэшбэк": "",
-                     "Категория": "Супермаркеты",
-                     "MCC": 5411.0,
-                     "Описание": "SPAR",
-                     "Бонусы (включая кэшбэк)": 1,
-                     "Округление на инвесткопилку": 0,
-                     "Сумма операции с округлением": 97.8}]}',
-            "2019",
-            "1",
-        )
-        == json.dumps({"Мобильная связь": 0, "Супермаркеты": 1}, ensure_ascii=False, indent=4)
+    assert analysis_of_cashback_categories(f"{mock_reader.return_value}", "2019", "1") == json.dumps(
+        {"Мобильная связь": 0, "Супермаркеты": 1}, ensure_ascii=False, indent=4
     )
 
 

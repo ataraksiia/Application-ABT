@@ -109,10 +109,10 @@ def home_page(time: str) -> str:
     url = f"https://financialmodelingprep.com/api/v3/stock/list?apikey={API_KEY_2}"
     response = requests.get(url, headers={"apikey": API_KEY_2})
     response_data = response.json()
-    for item in response_data:
+    for share in response_data:
         for stock in stocks:
-            if item.get("symbol", "") == stock:
-                stock_prices.append(dict(stock=stock, price=item.get("price", "")))
+            if share.get("symbol", "") == stock:
+                stock_prices.append(dict(stock=stock, price=share.get("price", "")))
     output["stock_prices"] = stock_prices
 
     json_data = json.dumps(output, ensure_ascii=False, indent=4)

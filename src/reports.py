@@ -10,6 +10,12 @@ logger = setup_logger("reports", "../all_loggers/reports.log")
 
 
 def spending_by_category(transactions: str, category: str, date: Optional[str] = None) -> pd.DataFrame:
+    """Функция принимает на вход:
+    датафрейм с транзакциями,
+    название категории,
+    опциональную дату.
+    Если дата не передана, то берется текущая дата.
+    Функция возвращает траты по заданной категории за последние три месяца (от переданной даты)."""
     logger.info("start spending_by_category")
     category = category.title()
     expenditure = []

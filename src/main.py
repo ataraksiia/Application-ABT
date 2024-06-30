@@ -1,11 +1,6 @@
 from src.reports import spending_by_category
-from src.services import (
-    analysis_of_cashback_categories,
-    investment_bank,
-    simple_search,
-    sort_by_phone_numbers,
-    transfer_to_individuals,
-)
+from src.services import (analysis_of_cashback_categories, investment_bank, simple_search, sort_by_phone_numbers,
+                          transfer_to_individuals)
 from src.views import home_page
 
 if __name__ == "__main__":
