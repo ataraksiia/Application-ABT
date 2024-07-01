@@ -1,16 +1,12 @@
 import json
-import pytest
-from unittest.mock import Mock, patch
-from pandas import DataFrame
 from typing import Any, Dict, List
+from unittest.mock import Mock, patch
 
-from src.services import (
-    analysis_of_cashback_categories,
-    investment_bank,
-    simple_search,
-    sort_by_phone_numbers,
-    transfer_to_individuals,
-)
+import pytest
+from pandas import DataFrame
+
+from src.services import (analysis_of_cashback_categories, investment_bank, simple_search, sort_by_phone_numbers,
+                          transfer_to_individuals)
 
 
 @patch("pandas.read_excel")
