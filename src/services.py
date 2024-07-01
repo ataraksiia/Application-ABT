@@ -3,7 +3,6 @@ import math
 import re
 from datetime import datetime
 from typing import Any, Dict, List
-
 import pandas as pd
 
 from src.logger import setup_logger
@@ -44,7 +43,7 @@ def analysis_of_cashback_categories(data: str, year: str, month: str) -> str:
 
 def rounded_number(num: int, step: int) -> int:
     """Функция округления числа с определённым шагом"""
-    plus_num = (num**2) ** 0.5
+    plus_num = (num ** 2) ** 0.5
     round_number = int(math.ceil(plus_num / step)) * step
     return round_number
 
@@ -60,8 +59,8 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
             transaction_date = datetime.strptime(date_string, "%d.%m.%Y")
             if user_date.strftime("%m.%Y") in transaction_date.strftime("%m.%Y"):
                 money_box += (
-                    rounded_number(transaction.get("Сумма операции", ""), limit)
-                    - (transaction.get("Сумма операции", "") ** 2) ** 0.5
+                        rounded_number(transaction.get("Сумма операции", ""), limit)
+                        - (transaction.get("Сумма операции", "") ** 2) ** 0.5
                 )
     logger.info(f"end {money_box}\n")
     return money_box
@@ -74,7 +73,7 @@ def simple_search(user_request: str) -> str:
     data = []
     for transaction in python_data:
         if (user_request.lower() in (transaction.get("Описание", "")).lower()) or user_request.lower() in (
-            str(transaction.get("Категория", ""))
+                str(transaction.get("Категория", ""))
         ).lower():
             data.append(transaction)
         for k, v in transaction.items():
@@ -119,3 +118,21 @@ def sort_by_phone_numbers() -> str:
     logger.info(f"end {json_data}\n")
 
     return json_data
+
+
+def main_function_services(data: str, year: str, month: str, transactions: List[Dict[str, Any]], limit: int,
+                           user_request: str) -> str:
+    """Функуия, которая обьединяет функции модуля services.
+    Для функции investment_bank отдельно подайте список со словорями(не файл!) в переменную transactions"""
+    print(analysis_of_cashback_categories(data, year, month))
+    print(investment_bank(f"{year}-{month}", transactions, limit))
+    print(simple_search(user_request))
+    print(transfer_to_individuals())
+    print(sort_by_phone_numbers())
+
+#Пример:
+# main_function_services("../data/operations.xls", "2021", "09",
+#                        [{"Дата операции": "29.09.2021", "Сумма операции": -4429.0},
+#                         {"Дата операции": "29.09.2021", "Сумма операции": -354.0},
+#                         {"Дата операции": "29.09.2021", "Сумма операции": -2110.0},
+#                         {"Дата операции": "29.08.2021", "Сумма операции": -25.0}], 50, "Такси")
