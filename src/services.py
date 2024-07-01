@@ -57,8 +57,8 @@ def investment_bank(month: str, transactions: List[Dict[str, Any]], limit: int) 
     for transaction in transactions:
         date_string = transaction.get("Дата операции", "")
         if date_string != "":
-            transaction_date = datetime.strptime(date_string, "%d.%m.%Y")
-            if user_date.strftime("%m.%Y") in transaction_date.strftime("%m.%Y"):
+            transaction_date = datetime.strptime(date_string, "%d.%m.%Y %H:%M:%S")
+            if user_date.strftime("%Y-%m") in transaction_date.strftime("%Y-%m"):
                 money_box += (
                     rounded_number(transaction.get("Сумма операции", ""), limit)
                     - (transaction.get("Сумма операции", "") ** 2) ** 0.5
@@ -121,21 +121,39 @@ def sort_by_phone_numbers() -> str:
     return json_data
 
 
-def main_function_services(
-    data: str, year: str, month: str, transactions: List[Dict[str, Any]], limit: int, user_request: str
-) -> None:
-    """Функуия, которая обьединяет функции модуля services.
-    Для функции investment_bank отдельно подайте список со словорями(не файл!) в переменную transactions"""
-    print(analysis_of_cashback_categories(data, year, month))
-    print(investment_bank(f"{year}-{month}", transactions, limit))
-    print(simple_search(user_request))
-    print(transfer_to_individuals())
-    print(sort_by_phone_numbers())
+def main_function_services() -> None:
+    """Функуия, которая обьединяет функции модуля services."""
+    user_input = input(
+        "Хотите ли вы проанализировать, какие категории были наиболее выгодными для выбора"
+        " в качестве категорий повышенного кешбэка?Да/Нет\n"
+    ).lower()
+    if user_input == "да":
+        year, month = input("Введите год и месяц через пробел (формат 2021 08)\n").split()
+        print(analysis_of_cashback_categories("../data/operations.xls", year, month))
+    user_input = input(
+        "Хотите ли вы узнать сумму, которую удалось бы отложить в «Инвесткопилку»,"
+        "если бы вы настроили шаг округления? Да/Нет\n"
+    ).lower()
+    if user_input == "да":
+        month = input("Введите год и месяц (формат 2021-08)\n")
+        limit = int(input("Введите шаг округления\n"))
+        data = read_transactions_xlsx_file("../data/operations.xls")
+        print(investment_bank(month, data, limit))
 
+    user_input = input(
+        "Хотите ли вы отфильтровать транзакции по слову, которое должно содержаться"
+        "в описании или категории? Да/Нет\n"
+    ).lower()
+    if user_input == "да":
+        user_request = input("Введите слово\n").lower()
+        print(simple_search(user_request))
 
-# Пример:
-# main_function_services("../data/operations.xls", "2021", "09",
-#                        [{"Дата операции": "29.09.2021", "Сумма операции": -4429.0},
-#                         {"Дата операции": "29.09.2021", "Сумма операции": -354.0},
-#                         {"Дата операции": "29.09.2021", "Сумма операции": -2110.0},
-#                         {"Дата операции": "29.08.2021", "Сумма операции": -25.0}], 50, "Такси")
+    user_input = input("Хотите ли вы отфильтровать транзакции по мобильным номерам? Да/Нет\n").lower()
+    if user_input == "да":
+        print(sort_by_phone_numbers())
+
+    user_input = input(
+        "Хотите ли вы отфильтровать транзакции, которые относятся к переводам физлицам?" "Да/Нет\n"
+    ).lower()
+    if user_input == "да":
+        print(transfer_to_individuals())

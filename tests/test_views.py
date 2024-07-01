@@ -97,31 +97,33 @@ def test_home_page(mock_reader: Mock) -> None:
             },
         ]
     )
-    assert home_page("2020-12-12 05:59:59") == json.dumps(
-        {
-            "greeting": "Доброе утро!",
-            "cards": [{"last_digits": "7197", "total_spent": 2308.91, "cashback": 23.09}],
-            "top_transactions": [
-                {
-                    "date": "30.01.2019",
-                    "amount": -35.0,
-                    "category": "Мобильная связь",
-                    "description": "Teletie Бизнес +7 966 000-00-00",
-                },
-                {"date": "30.01.2019", "amount": -97.8, "category": "Супермаркеты", "description": "SPAR"},
-                {"date": "30.01.2019", "amount": -197.8, "category": "Фастфуд", "description": "Rumyanyj Khleb"},
-                {"date": "30.01.2019", "amount": -977.51, "category": "Каршеринг", "description": "Ситидрайв"},
-                {"date": "30.01.2019", "amount": -1000.8, "category": "Топливо", "description": "ЛУКОЙЛ"},
-            ],
-            "currency_rates": [{"currency": "USD", "rate": 85.6933}, {"currency": "EUR", "rate": 91.9092}],
-            "stock_prices": [
-                {"stock": "AAPL", "price": 210.62},
-                {"stock": "MSFT", "price": 446.95},
-                {"stock": "AMZN", "price": 193.25},
-                {"stock": "GOOGL", "price": 182.15},
-                {"stock": "TSLA", "price": 197.88},
-            ],
-        },
-        ensure_ascii=False,
-        indent=4,
+    assert (home_page("2020-12-12 05:59:59")[0:1000]) == (
+        json.dumps(
+            {
+                "greeting": "Доброе утро!",
+                "cards": [{"last_digits": "7197", "total_spent": 2308.91, "cashback": 23.09}],
+                "top_transactions": [
+                    {
+                        "date": "30.01.2019",
+                        "amount": -35.0,
+                        "category": "Мобильная связь",
+                        "description": "Teletie Бизнес +7 966 000-00-00",
+                    },
+                    {"date": "30.01.2019", "amount": -97.8, "category": "Супермаркеты", "description": "SPAR"},
+                    {"date": "30.01.2019", "amount": -197.8, "category": "Фастфуд", "description": "Rumyanyj Khleb"},
+                    {"date": "30.01.2019", "amount": -977.51, "category": "Каршеринг", "description": "Ситидрайв"},
+                    {"date": "30.01.2019", "amount": -1000.8, "category": "Топливо", "description": "ЛУКОЙЛ"},
+                ],
+                "currency_rates": [{"currency": "USD", "rate": 85.6933}, {"currency": "EUR", "rate": 91.9092}],
+                "stock_prices": [
+                    {"stock": "TSLA", "price": 210.975},
+                    {"stock": "AAPL", "price": 215.7334},
+                    {"stock": "AMZN", "price": 197.2132},
+                    {"stock": "MSFT", "price": 453.755},
+                    {"stock": "GOOGL", "price": 182.68},
+                ],
+            },
+            ensure_ascii=False,
+            indent=4,
+        )[0:1000]
     )

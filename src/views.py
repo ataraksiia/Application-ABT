@@ -106,10 +106,10 @@ def home_page(time: str) -> str:
                 big_amount.remove(amount)
     output["top_transactions"] = top_transactions
 
-    url = f"https://financialmodelingprep.com/api/v3/stock/list?apikey={API_KEY_2}"
-    response = requests.get(url, headers={"apikey": API_KEY_2})
-    response_data = response.json()
-    for share in response_data:
+    url_2 = f"https://financialmodelingprep.com/api/v3/stock/list?apikey={API_KEY_2}"
+    response_2 = requests.get(url_2, headers={"apikey": API_KEY_2})
+    response_data_2 = response_2.json()
+    for share in response_data_2:
         for stock in stocks:
             if share.get("symbol", "") == stock:
                 stock_prices.append(dict(stock=stock, price=share.get("price", "")))
@@ -117,4 +117,8 @@ def home_page(time: str) -> str:
 
     json_data = json.dumps(output, ensure_ascii=False, indent=4)
     logger.info(f"end home_page\n{json_data}\n")
+
+    with open("user_settings.json", "w") as file:
+        json.dump(output, file, ensure_ascii=False, indent=4)
+
     return json_data

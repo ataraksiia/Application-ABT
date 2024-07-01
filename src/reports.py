@@ -45,6 +45,3 @@ def spending_by_category(transactions: str, category: str, date: Optional[str] =
     df = pd.DataFrame(list(expenditure), columns=["Дата платежа", "Категория", "Сумма платежа"])
     logger.info(f"end \n{df}\n")
     return df
-
-
-spending_by_category("../data/operations.xls", "Фастфуд", "07.10.2018")
