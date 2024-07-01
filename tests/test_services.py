@@ -1,6 +1,8 @@
 import json
+import pytest
 from unittest.mock import Mock, patch
 from pandas import DataFrame
+from typing import Any, Dict, List
 
 from src.services import (
     analysis_of_cashback_categories,
@@ -56,21 +58,31 @@ def test_analysis_of_cashback_categories(mock_reader: Mock) -> None:
     )
 
 
-@patch("src.services.investment_bank")
-def test_investment_bank(mock_reader: Mock) -> None:
-    assert (
-        investment_bank(
-            "2021-09",
+@pytest.mark.parametrize(
+    "operation, invest_amount",
+    [
+        (
+            [
+                {"Дата операции": "29.09.2021", "Сумма операции": -489.0},
+                {"Дата операции": "29.09.2021", "Сумма операции": -304.0},
+                {"Дата операции": "29.09.2021", "Сумма операции": -210.0},
+                {"Дата операции": "29.08.2021", "Сумма операции": -25.0},
+            ],
+            97.0,
+        ),
+        (
             [
                 {"Дата операции": "29.09.2021", "Сумма операции": -4429.0},
                 {"Дата операции": "29.09.2021", "Сумма операции": -354.0},
                 {"Дата операции": "29.09.2021", "Сумма операции": -2110.0},
                 {"Дата операции": "29.08.2021", "Сумма операции": -25.0},
             ],
-            50,
-        )
-        == 107.0
-    )
+            107.0,
+        ),
+    ],
+)
+def test_investment_bank(operation: List[Dict[str, Any]], invest_amount: float) -> None:
+    assert investment_bank("2021-09", operation, 50) == invest_amount
 
 
 @patch("pandas.read_excel")
@@ -203,9 +215,9 @@ def test_transfer_to_individuals(mock_reader: Mock) -> None:
     )
 
 
-@patch("pandas.read_excel")
-def test_sort_by_phone_numbers(mock_reader: Mock) -> None:
-    mock_reader.return_value = DataFrame(
+@pytest.fixture
+def transactions() -> list[list[dict]]:
+    return [
         [
             {
                 "Дата операции": "31.01.2019 13:34:15",
@@ -241,11 +253,6 @@ def test_sort_by_phone_numbers(mock_reader: Mock) -> None:
                 "Округление на инвесткопилку": 0,
                 "Сумма операции с округлением": 97.8,
             },
-        ]
-    )
-
-    assert sort_by_phone_numbers() == json.dumps(
-        [
             {
                 "Дата операции": "31.01.2019 13:34:15",
                 "Дата платежа": "31.01.2019",
@@ -262,8 +269,91 @@ def test_sort_by_phone_numbers(mock_reader: Mock) -> None:
                 "Бонусы (включая кэшбэк)": 0,
                 "Округление на инвесткопилку": 0,
                 "Сумма операции с округлением": 35.0,
-            }
-        ],
-        ensure_ascii=False,
-        indent=4,
-    )
+            },
+            {
+                "Дата операции": "30.01.2019 20:34:24",
+                "Дата платежа": "01.02.2019",
+                "Номер карты": "*7197",
+                "Статус": "OK",
+                "Сумма операции": -97.8,
+                "Валюта операции": "RUB",
+                "Сумма платежа": -97.8,
+                "Валюта платежа": "RUB",
+                "Кэшбэк": "",
+                "Категория": "Мобильная связь",
+                "MCC": 5411.0,
+                "Описание": "Teletie Бизнес +7 966 567-00-89",
+                "Бонусы (включая кэшбэк)": 1,
+                "Округление на инвесткопилку": 0,
+                "Сумма операции с округлением": 97.8,
+            },
+        ]
+    ]
+
+
+@patch("pandas.read_excel")
+def test_sort_by_phone_numbers(mock_reader: Mock, transactions: list[dict]) -> None:
+    examination = []
+    for transaction in transactions:
+        mock_reader.return_value = DataFrame(transaction)
+        examination.append(sort_by_phone_numbers())
+    format_object = [
+        json.dumps(
+            [
+                {
+                    "Дата операции": "31.01.2019 13:34:15",
+                    "Дата платежа": "31.01.2019",
+                    "Номер карты": "",
+                    "Статус": "OK",
+                    "Сумма операции": -35.0,
+                    "Валюта операции": "RUB",
+                    "Сумма платежа": -35.0,
+                    "Валюта платежа": "RUB",
+                    "Кэшбэк": "",
+                    "Категория": "Мобильная связь",
+                    "MCC": "",
+                    "Описание": "Teletie Бизнес +7 966 000-00-00",
+                    "Бонусы (включая кэшбэк)": 0,
+                    "Округление на инвесткопилку": 0,
+                    "Сумма операции с округлением": 35.0,
+                },
+                {
+                    "Дата операции": "31.01.2019 13:34:15",
+                    "Дата платежа": "31.01.2019",
+                    "Номер карты": "",
+                    "Статус": "OK",
+                    "Сумма операции": -35.0,
+                    "Валюта операции": "RUB",
+                    "Сумма платежа": -35.0,
+                    "Валюта платежа": "RUB",
+                    "Кэшбэк": "",
+                    "Категория": "Мобильная связь",
+                    "MCC": "",
+                    "Описание": "Teletie Бизнес +7 966 000-00-00",
+                    "Бонусы (включая кэшбэк)": 0,
+                    "Округление на инвесткопилку": 0,
+                    "Сумма операции с округлением": 35.0,
+                },
+                {
+                    "Дата операции": "30.01.2019 20:34:24",
+                    "Дата платежа": "01.02.2019",
+                    "Номер карты": "*7197",
+                    "Статус": "OK",
+                    "Сумма операции": -97.8,
+                    "Валюта операции": "RUB",
+                    "Сумма платежа": -97.8,
+                    "Валюта платежа": "RUB",
+                    "Кэшбэк": "",
+                    "Категория": "Мобильная связь",
+                    "MCC": 5411.0,
+                    "Описание": "Teletie Бизнес +7 966 567-00-89",
+                    "Бонусы (включая кэшбэк)": 1,
+                    "Округление на инвесткопилку": 0,
+                    "Сумма операции с округлением": 97.8,
+                },
+            ],
+            ensure_ascii=False,
+            indent=4,
+        )
+    ]
+    assert examination == format_object

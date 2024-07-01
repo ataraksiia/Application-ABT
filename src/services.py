@@ -8,7 +8,7 @@ import pandas as pd
 
 from src.logger import setup_logger
 
-logger = setup_logger("services", "../all_loggers/services.log")
+logger = setup_logger("services", "services.log")
 
 
 def read_transactions_xlsx_file(xlsx_file: str) -> list[dict]:

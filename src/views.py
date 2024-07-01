@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from src.logger import setup_logger
 from src.services import read_transactions_xlsx_file
 
-logger = setup_logger("views", "../all_loggers/views.log")
+logger = setup_logger("views", "views.log")
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY")

@@ -113,7 +113,7 @@ def test_home_page(mock_reader: Mock) -> None:
                 {"date": "30.01.2019", "amount": -977.51, "category": "Каршеринг", "description": "Ситидрайв"},
                 {"date": "30.01.2019", "amount": -1000.8, "category": "Топливо", "description": "ЛУКОЙЛ"},
             ],
-            "currency_rates": [{"currency": "USD", "rate": 85.4815}, {"currency": "EUR", "rate": 91.4569}],
+            "currency_rates": [{"currency": "USD", "rate": 85.6933}, {"currency": "EUR", "rate": 91.9092}],
             "stock_prices": [
                 {"stock": "AAPL", "price": 210.62},
                 {"stock": "MSFT", "price": 446.95},

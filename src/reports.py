@@ -7,7 +7,7 @@ from src.decorators import log
 from src.logger import setup_logger
 from src.services import read_transactions_xlsx_file
 
-logger = setup_logger("reports", "../all_loggers/reports.log")
+logger = setup_logger("reports", "reports.log")
 
 
 @log()
